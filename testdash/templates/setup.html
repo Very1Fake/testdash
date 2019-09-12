@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row align-items-center justify-content-center vertical-expansion">
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header">Установка</div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {{ form.hidden_tag() }}
+                            <p class="h3">Аккаунт администратора</p>
+                            <div class="form-group">
+                                {{ form.login.label(text="Логин") }}
+                                {% if form.password.errors %}
+                                    {{ form.login(class="form-control is-invalid", placeholder="Логин", value="root") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.login(class="form-control", placeholder="Логин", value="root") }}
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.password.label(text="Пароль") }}
+                                {% if form.password.errors %}
+                                    {{ form.password(class="form-control is-invalid", placeholder="Пароль") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.password(class="form-control", placeholder="Пароль") }}
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.confirm_password.label(text="Подтвердите пароль") }}
+                                {% if form.confirm_password.errors %}
+                                    {{ form.confirm_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.confirm_password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.confirm_password(class="form-control", placeholder="Повторите пароль") }}
+                                {% endif %}
+                            </div>
+                            {{ form.submit(class="btn btn-outline-primary", value="Готово") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

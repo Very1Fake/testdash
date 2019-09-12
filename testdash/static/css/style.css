@@ -1,0 +1,16 @@
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+}
+
+.vertical-expansion {
+    height: 100vh !important;
+}
+
+.window-border {
+    height: auto;
+    min-height: 5rem;
+}

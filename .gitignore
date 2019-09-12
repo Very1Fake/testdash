@@ -1,1 +1,5 @@
+# Not needed
+testdash/app.db
+
+# IDE
 .idea/
