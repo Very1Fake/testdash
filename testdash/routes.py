@@ -1,6 +1,6 @@
 import os
 
-from flask import render_template, Blueprint, redirect, request, flash, url_for
+from flask import render_template, Blueprint, redirect, request, flash, url_for, abort
 from flask_login import login_user, current_user, logout_user, login_required
 
 from . import library as lib
@@ -35,6 +35,8 @@ def dashboard():  # Dashboard main section
 def dasboard_section(section):  # Dashboard section
     if section == 'main':
         return redirect(url_for('dashboard'))
+    else:
+        return abort(404)
 
 
 '''@app.route('/setup', methods=['GET', 'POST'])
@@ -70,3 +72,8 @@ def signin():  # Auth page
 def signout():  # Sign out page
     logout_user()
     return redirect('/')
+
+
+@app.errorhandler(404)
+def error404(e):
+    return render_template('404.html')
