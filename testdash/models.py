@@ -17,14 +17,24 @@ class User(db.Model, UserMixin):  # User model
     timestamp = db.Column(db.Integer, nullable=False, default=-1)
 
     def __repr__(self):
-        return f"User ('{self.uid}', '{self.login}')"
+        return f"User ('{self.id}', '{self.login}')"
 
 
 class Action(db.Model):  # Temporary unused
-    id = db.Column(db.Integer, unique=True, primary_key=True, autoincrement=True, nullable=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(32), nullable=False)
     login = db.Column(db.String(64), nullable=False)
     comment = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"Action ('{self.id}', '{self.name}', '{self.login}')"
+
+
+class Visit(db.Model):
+    id = db.Column(db.Integer, unique=True, primary_key=True, autoincrement=True, nullable=False)
+    login = db.Column(db.String(64), nullable=False)
+    address = db.Column(db.String, nullable=False)
+    timestamp = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"Visit ('{self.id}', '{self.login}', '{self.address}')"

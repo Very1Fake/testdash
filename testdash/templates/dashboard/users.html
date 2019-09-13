@@ -1,0 +1,50 @@
+{% extends "dashboard.html" %}
+
+{% block menu %}
+    <div class="card">
+        <div class="card-header">
+            {{ current_user.login }}
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="/dashboard" class="list-group-item list-group-item-action">Главная</a>
+            <a class="list-group-item list-group-item-action text-white active">Пользователи</a>
+            <a href="/signout" class="list-group-item list-group-item-action">Выйти</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main_block %}
+    <div class="row m-0 col-bottom-p">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    Все пользователи
+                </div>
+                <div class="card-body p-3">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Логин</th>
+                                <th scope="col">Дата регистрации</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <th scope="row">{{ user.id }}</th>
+                                    <td>{{ user.login }}</td>
+                                    {% if user.timestamp >= 0 %}
+                                        <td>{{ user.timestamp|timetodate }}</td>
+                                    {% else %}
+                                        <td>Неизвестно</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
