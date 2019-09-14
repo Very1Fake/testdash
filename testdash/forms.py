@@ -35,3 +35,8 @@ class EditUserPassForm(FlaskForm):  # Validation form for user's password edit
     password = PasswordField('password', validators=[DataRequired(), Length(4, 64)])
     repeat_password = PasswordField('repeat_password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('edit_pass')
+
+
+class DeleteUserForm(FlaskForm):  # Validation form for user delete
+    login = StringField('login', validators=[DataRequired(), Length(4, 64)])
+    submit = SubmitField('delete')

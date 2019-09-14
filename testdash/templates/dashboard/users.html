@@ -33,6 +33,7 @@
                                 <th scope="col">Полное имя</th>
                                 <th scope="col">Дата регистрации</th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,6 +48,7 @@
                                         <td>Неизвестно</td>
                                     {% endif %}
                                     <td><a href="/user/edit/{{ user.login }}" class="btn btn-primary btn-sm">Изменить</a></td>
+                                    <td><a href="/user/delete/{{ user.login }}" class="btn btn-danger btn-sm">Удалить</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

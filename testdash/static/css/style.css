@@ -28,3 +28,8 @@ body {
     vertical-align: middle;
     text-align: center;
 }
+
+.table > tbody > tr > th {
+    vertical-align: middle;
+    text-align: center;
+}

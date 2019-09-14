@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):  # User model
     id = db.Column(db.Integer, unique=True, primary_key=True, autoincrement=True, nullable=False)
     login = db.Column(db.String(64), unique=True, nullable=False)
     name = db.Column(db.String(128))
-    password = db.Column(db.String(128), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     timestamp = db.Column(db.Integer, nullable=False, default=-1)
 
     def __repr__(self):

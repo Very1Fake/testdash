@@ -1,5 +1,4 @@
 {
-  "SERVER_NAME": "127.0.0.1:8080",
   "SECRET_KEY": "TestKey",
   "TESTING": "False",
   "SQLALCHEMY_DATABASE_URI": "sqlite:///app.db"

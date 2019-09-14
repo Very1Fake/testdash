@@ -6,7 +6,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 from . import app, db, system
 from . import library as lib
-from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm
+from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm, DeleteUserForm
 from .models import User, Visit
 
 
@@ -45,7 +45,7 @@ def dashboard_section(section):  # Dashboard section
 
 
 @app.route('/user')
-def users(action):
+def users():
     return redirect('/dashboard/users')
 
 
@@ -75,20 +75,35 @@ def user_edit(login):
         flash(f"Пользователя '{login}' не существует", 'danger')
         return redirect('/dashboard/users')
     if form_pass.validate_on_submit():
-        user = User.query.filter_by(login=login).first()
         user.password = lib.encrypt_password(form_pass.password.data)
         db.session.add(user)
         db.session.commit()
         flash(f"Пароль пользователя '{user.login}' успешно изменён", 'success')
         return redirect('/dashboard/users')
     elif form_name.validate_on_submit():
-        user = User.query.filter_by(login=login).first()
         user.name = form_name.name.data
         db.session.add(user)
         db.session.commit()
         flash(f"Имя пользователя '{user.login}' успешно изменено", 'success')
         return redirect('/dashboard/users')
     return render_template('user/edit.html', user=user, form_name=form_name, form_pass=form_pass)
+
+
+@app.route('/user/delete/<login>', methods=['GET', 'POST'])
+def user_delete(login):
+    form = DeleteUserForm(request.form)
+    user = User.query.filter_by(login=login).first()
+    if not user:
+        flash(f"Пользователя '{login}' не существует", 'danger')
+    if form.validate_on_submit():
+        if form.login.data == user.login:
+            db.session.delete(user)
+            db.session.commit()
+            flash(f"Пользователь '{user.login}' удалён", 'info')
+            return redirect('/dashboard/users')
+        else:
+            flash('Вы неправильно ввели логин пользователя', 'danger')
+    return render_template('user/delete.html', form=form, user=user.login)
 
 
 @app.route('/setup', methods=['GET', 'POST'])
