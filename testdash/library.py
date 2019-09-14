@@ -73,6 +73,9 @@ def check_password(password: str, password_right: str):  # Checking SHA512 hash 
         return False
 
 
+''' Filters for jinja '''
+
+
 @app.template_filter('timetodate')
 def timestamp_to_date(timestamp: int) -> str:
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')

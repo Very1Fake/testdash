@@ -12,15 +12,28 @@
                             <p class="h3">Аккаунт администратора</p>
                             <div class="form-group">
                                 {{ form.login.label(text="Логин") }}
-                                {% if form.password.errors %}
+                                {% if form.login.errors %}
                                     {{ form.login(class="form-control is-invalid", placeholder="Логин", value="root") }}
                                     <div class="invalid-feedback">
-                                        {% for error in form.password.errors %}
+                                        {% for error in form.login.errors %}
                                             <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
                                 {% else %}
                                     {{ form.login(class="form-control", placeholder="Логин", value="root") }}
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.name.label(text="Полное имя") }}
+                                {% if form.name.errors %}
+                                    {{ form.name(class="form-control is-invalid", placeholder="Полное имя (необязательно)") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.name.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.name(class="form-control", placeholder="Полное имя (необязательно)") }}
                                 {% endif %}
                             </div>
                             <div class="form-group">
@@ -37,16 +50,16 @@
                                 {% endif %}
                             </div>
                             <div class="form-group">
-                                {{ form.confirm_password.label(text="Подтвердите пароль") }}
-                                {% if form.confirm_password.errors %}
-                                    {{ form.confirm_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
+                                {{ form.repeat_password.label(text="Подтвердите пароль") }}
+                                {% if form.repeat_password.errors %}
+                                    {{ form.repeat_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
                                     <div class="invalid-feedback">
-                                        {% for error in form.confirm_password.errors %}
+                                        {% for error in form.repeat_password.errors %}
                                             <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
                                 {% else %}
-                                    {{ form.confirm_password(class="form-control", placeholder="Повторите пароль") }}
+                                    {{ form.repeat_password(class="form-control", placeholder="Повторите пароль") }}
                                 {% endif %}
                             </div>
                             {{ form.submit(class="btn btn-outline-primary", value="Готово") }}

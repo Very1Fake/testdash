@@ -1,0 +1,76 @@
+{% extends "dashboard.html" %}
+{% from "functions.html" import menu %}
+
+{% block menu %}
+    {{ menu(current_user.login, 'main') }}
+{% endblock %}
+
+{% block main_block %}
+    <div class="row m-0 col-bottom-p">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    Изменение пользователя
+                </div>
+                <div class="card-body p-3">
+                    <div class="form-group">
+                        <label for="login">Логин</label>
+                        <input class="form-control" id="login" value="{{ user.login }}" type="text" readonly>
+                    </div>
+                    <form method="post" action="">
+                        {{ form_name.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form_name.name.label(text="Полное имя") }}
+                            {% if form_name.name.errors %}
+                                {{ form_name.name(class="form-control is-invalid", placeholder="Полное имя", value=user.name) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form_name.name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form_name.name(class="form-control", placeholder="Полное имя", value=user.name) }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="timestamp">Дата создания</label>
+                            <input class="form-control" id="timestamp" value="{{ user.timestamp|timetodate }}" type="text" readonly>
+                        </div>
+                        {{ form_name.submit(class="btn btn-primary", value="Изменить") }}
+                    </form>
+                        <hr>
+                    <form method="post" action="">
+                        {{ form_pass.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form_pass.password.label(text="Пароль") }}
+                            {% if form_pass.password.errors %}
+                                {{ form_pass.password(class="form-control is-invalid", placeholder="Пароль") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form_pass.password(class="form-control", placeholder="Пароль") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form_pass.repeat_password.label(text="Подтвердите пароль") }}
+                            {% if form_pass.repeat_password.errors %}
+                                {{ form_pass.repeat_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.repeat_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form_pass.repeat_password(class="form-control", placeholder="Повторите пароль") }}
+                            {% endif %}
+                        </div>
+                        {{ form_pass.submit(class="btn btn-primary", value="Изменить пароль") }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

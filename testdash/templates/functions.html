@@ -1,0 +1,12 @@
+{% macro menu(user, page) %}
+    <div class="card">
+        <div class="card-header">
+            {{ user }}
+        </div>
+        <div class="list-group list-group-flush">
+            <a {% if page != 'main' %}href="/dashboard"{% endif %} class="list-group-item list-group-item-action {% if page == 'main' %}text-white active{% endif %}">Главная</a>
+            <a {% if page != 'users' %}href="/dashboard/users"{% endif %} class="list-group-item list-group-item-action {% if page == 'users' %}text-white active{% endif %}">Пользователи</a>
+            <a href="/signout" class="list-group-item list-group-item-action">Выйти</a>
+        </div>
+    </div>
+{% endmacro %}

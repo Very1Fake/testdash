@@ -1,20 +1,21 @@
 {% extends "dashboard.html" %}
+{% from "functions.html" import menu %}
 
 {% block menu %}
-    <div class="card">
-        <div class="card-header">
-            {{ current_user.login }}
-        </div>
-        <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action text-white active">Главная</a>
-            <a href="/dashboard/users" class="list-group-item list-group-item-action">Пользователи</a>
-            <a href="/signout" class="list-group-item list-group-item-action">Выйти</a>
-        </div>
-    </div>
+    {{ menu(current_user.login, 'main') }}
 {% endblock %}
 
 {% block main_block %}
     <div class="row m-0 col-bottom-p">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, message in messages %}
+                <div class="col-12">
+                    <div class="alert alert-{{ category }} m-0">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endwith %}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">

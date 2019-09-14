@@ -1,0 +1,77 @@
+{% extends "dashboard.html" %}
+{% from "functions.html" import menu %}
+
+{% block menu %}
+    {{ menu(current_user.login, 'user_new') }}
+{% endblock %}
+
+{% block main_block %}
+    <div class="row m-0 col-bottom-p">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    Новый пользователь
+                </div>
+                <div class="card-body p-3">
+                    <form method="post" action="">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.login.label(text="Логин") }}
+                            {% if form.login.errors %}
+                                {{ form.login(class="form-control is-invalid", placeholder="Логин") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.login.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.login(class="form-control", placeholder="Логин") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.name.label(text="Полное имя") }}
+                            {% if form.name.errors %}
+                                {{ form.name(class="form-control is-invalid", placeholder="Полное имя (необязательно)") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.name(class="form-control", placeholder="Полное имя (необязательно)") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password.label(text="Пароль") }}
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid", placeholder="Пароль") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control", placeholder="Пароль") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.repeat_password.label(text="Подтвердите пароль") }}
+                            {% if form.repeat_password.errors %}
+                                {{ form.repeat_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.repeat_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.repeat_password(class="form-control", placeholder="Повторите пароль") }}
+                            {% endif %}
+                        </div>
+                        {{ form.submit(class="btn btn-primary", value="Создать") }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
