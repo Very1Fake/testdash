@@ -26,6 +26,7 @@ class Action(db.Model):  # Users actions (soon)
     name = db.Column(db.String(32), nullable=False)
     login = db.Column(db.String(64), nullable=False)
     address = db.Column(db.String, nullable=False)
+    timestamp = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
 
     def __repr__(self):

@@ -35,10 +35,12 @@
                             <td>Оперативная память</td>
                             <td>{{ sys_info['ram'][0] }} / {{ sys_info['ram'][1] }}</td>
                         </tr>
+                        {% if sys_info['swap'][1] != '0B' %}
                         <tr>
                             <td>Файл подкачки (swap)</td>
                             <td>{{ sys_info['swap'][0] }} / {{ sys_info['swap'][1] }}</td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <td>Продолжительность работы</td>
                             <td>{{ sys_info['uptime'] }}</td>
