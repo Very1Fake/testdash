@@ -1,7 +1,7 @@
 import os
 from time import time
 
-from flask import render_template, redirect, request, flash, url_for, abort
+from flask import render_template, redirect, request, flash, url_for
 from flask_login import login_user, current_user, logout_user, login_required
 
 from . import app, db, system
@@ -33,17 +33,68 @@ def dashboard():  # Dashboard main section
                            visits=Visit.query.order_by(Visit.timestamp.desc()).limit(5).all())
 
 
-@app.route('/dashboard/<section>')
+@app.route('/dashboard/users')
 @login_required
-def dashboard_section(section):  # Dashboard section
-    if section == 'main':
-        return redirect('/dashboard')
-    elif section == 'users':
-        return render_template('dashboard/users.html', users=User.query.all())
-    elif section == 'actions':
-        return render_template('dashboard/actions.html', actions=Action.query.order_by(Action.timestamp.desc()).all())
+def dashboard_section():  # Dashboard users page
+    return render_template('dashboard/users.html', users=User.query.all())
+
+
+@app.route('/dashboard/actions')
+@login_required
+def dashboard_action():  # Dashboard actions page
+    if 'page' in request.args:
+        page = int(request.args['page'])
+        if page <= 0:
+            flash('Хорошая попытка', 'info')
+            return redirect('/dashboard')
     else:
-        return abort(404)
+        page = 1
+    actions = Action.query.order_by(Action.timestamp.desc()).offset(20 * (page - 1)).limit(20).all()
+    if len(actions) == 0:
+        flash('Такой страницы не существует', 'danger')
+        return redirect('/dashboard/actions?page=1')
+    elif len(Action.query.order_by(Action.timestamp.desc()).offset(20 * page).limit(20).all()) == 0:
+        page_next = False
+    else:
+        page_next = True
+    return render_template('dashboard/actions.html', actions=actions, next=page_next, page=page)
+
+
+@app.route('/dashboard/visits')
+@login_required
+def dashboard_visits():  # Dashboard visits page
+    if 'page' in request.args:
+        page = int(request.args['page'])
+        if page <= 0:
+            flash('Хорошая попытка', 'info')
+            return redirect('/dashboard')
+    else:
+        page = 1
+    visits = Visit.query.order_by(Visit.timestamp.desc()).offset(30 * (page - 1)).limit(30).all()
+    if len(visits) == 0:
+        flash('Такой страницы не существует', 'danger')
+        return redirect('/dashboard/visits?page=1')
+    elif len(Visit.query.order_by(Visit.timestamp.desc()).offset(30 * page).limit(30).all()) == 0:
+        page_next = False
+    else:
+        page_next = True
+    return render_template('dashboard/visits.html', visits=visits, next=page_next, page=page)
+
+
+@app.route('/action')
+@login_required
+def actions():
+    return redirect('/dashboard/actions')
+
+
+@app.route('/action/see/<int:action_id>')
+def action_see(action_id):
+    action = Action.query.filter_by(id=action_id).first()
+    if action:
+        return render_template('action/see.html', action=action)
+    else:
+        flash('Данного действия не существует', 'danger')
+        return redirect('/dashboard/actions')
 
 
 @app.route('/user')
@@ -112,8 +163,11 @@ def user_delete(login):
         flash(f"Пользователя '{login}' не существует", 'danger')
     if form.validate_on_submit():
         if form.login.data == user.login:
-            db.session.add(Action(name='user_delete', login=login, address=request.remote_addr, timestamp=time(),
-                                  comment=f"Удаление пользователя '{user.login}'"))
+            db.session.add(
+                Action(name='user_delete', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                       comment=f"Удаление пользователя '{user.login}'"))
+            Visit.query.filter_by(login=user.login).delete()
+            Action.query.filter_by(login=user.login).delete()
             db.session.delete(user)
             db.session.commit()
             flash(f"Пользователь '{user.login}' удалён", 'info')

@@ -1,12 +1,9 @@
 import os
 import time
-from datetime import datetime
 
 import cpuinfo
 import psutil
 from Crypto.Hash import SHA512
-
-from . import app
 
 
 class System:
@@ -71,11 +68,3 @@ def check_password(password: str, password_right: str):  # Checking SHA512 hash 
         return True
     else:
         return False
-
-
-''' Filters for jinja '''
-
-
-@app.template_filter('timetodate')
-def timestamp_to_date(timestamp: int) -> str:
-    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')

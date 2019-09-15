@@ -1,6 +1,8 @@
 {% extends "dashboard.html" %}
 {% from "functions.html" import menu %}
 
+{% block title %}Удаление пользователя{% endblock %}
+
 {% block menu %}
     {{ menu(current_user.login, 'user_delete') }}
 {% endblock %}

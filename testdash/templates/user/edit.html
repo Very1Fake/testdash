@@ -1,6 +1,8 @@
 {% extends "dashboard.html" %}
 {% from "functions.html" import menu %}
 
+{% block title %}Изменение пользователя{% endblock %}
+
 {% block menu %}
     {{ menu(current_user.login, 'user_edit') }}
 {% endblock %}
@@ -34,7 +36,7 @@
                         </div>
                         <div class="form-group">
                             <label for="timestamp">Дата создания</label>
-                            <input class="form-control" id="timestamp" value="{{ user.timestamp|timetodate }}" type="text" readonly>
+                            <input class="form-control" id="timestamp" value="{{ user.timestamp|time_to_date }}" type="text" readonly>
                         </div>
                         {{ form_name.submit(class="btn btn-primary", value="Изменить") }}
                     </form>
