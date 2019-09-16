@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, Length, EqualTo, NumberRange
 
 
 class SetupForm(FlaskForm):  # Validation form for setup
@@ -28,15 +28,22 @@ class NewUserForm(FlaskForm):  # Validation form for new user creation
 
 class EditUserNameForm(FlaskForm):  # Validation form for user's name edit
     name = StringField('name', validators=[Length(0, 128)])
-    submit = SubmitField('edit_name')
+    submit_name = SubmitField('edit_name')
 
 
 class EditUserPassForm(FlaskForm):  # Validation form for user's password edit
     password = PasswordField('password', validators=[DataRequired(), Length(4, 64)])
     repeat_password = PasswordField('repeat_password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('edit_pass')
+    submit_pass = SubmitField('edit_pass')
 
 
 class DeleteUserForm(FlaskForm):  # Validation form for user delete
     login = StringField('login', validators=[DataRequired(), Length(4, 64)])
     submit = SubmitField('delete')
+
+
+class ExecuteCommand(FlaskForm):
+    command = StringField('command', validators=[DataRequired(), Length(1, 512)])
+    directory = StringField('directory')
+    timeout = IntegerField('timeout', validators=[DataRequired(), NumberRange(1, 8)])
+    submit = SubmitField('execute')

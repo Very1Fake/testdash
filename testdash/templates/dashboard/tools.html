@@ -1,0 +1,21 @@
+{% extends "dashboard.html" %}
+{% from "functions.html" import menu %}
+
+{% block title %}Инструменты{% endblock %}
+
+{% block menu %}
+    {{ menu(current_user.login, 'tools') }}
+{% endblock %}
+
+{% block main_block %}
+    <div class="row m-0 col-bottom-p">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">Система</div>
+                <div class="list-group list-group-flush">
+                    <a href="/tool/exec" class="list-group-item list-group-item-action">Выполнить команду</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

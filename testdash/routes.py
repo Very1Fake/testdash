@@ -1,12 +1,14 @@
 import os
+import subprocess
 from time import time
 
-from flask import render_template, redirect, request, flash, url_for
+from flask import render_template, redirect, request, flash, url_for, session, Response
 from flask_login import login_user, current_user, logout_user, login_required
 
 from . import app, db, system
 from . import library as lib
-from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm, DeleteUserForm
+from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm, DeleteUserForm, \
+    ExecuteCommand
 from .models import User, Visit, Action
 
 
@@ -15,7 +17,7 @@ def preload():  # Checking for db state (will be deprecated soon)
     if not os.path.exists('app.db'):
         db.create_all()
     if not User.query.first():
-        if not request.endpoint == 'setup':
+        if request.endpoint != 'setup' and request.endpoint != 'static':
             return redirect('/setup')
 
 
@@ -81,6 +83,12 @@ def dashboard_visits():  # Dashboard visits page
     return render_template('dashboard/visits.html', visits=visits, next=page_next, page=page)
 
 
+@app.route('/dashboard/tools')
+@login_required
+def dashboard_tools():
+    return render_template('dashboard/tools.html')
+
+
 @app.route('/action')
 @login_required
 def actions():
@@ -95,6 +103,58 @@ def action_see(action_id):
     else:
         flash('Данного действия не существует', 'danger')
         return redirect('/dashboard/actions')
+
+
+@app.route('/tool')
+@login_required
+def tools():
+    return redirect('/dashboard')
+
+
+@app.route('/tool/exec', methods=['GET', 'POST'])
+@login_required
+def tool_exec():
+    form = ExecuteCommand(request.form)
+    if form.validate_on_submit():
+        session['exec_cmd'] = form.command.data
+        session['exec_dir'] = form.directory.data if form.directory.data else '/'
+        session['exec_timeout'] = form.timeout.data
+        return redirect('/tool/exec_output')
+    return render_template('tool/exec.html', form=form)
+
+
+@app.route('/tool/exec_output')
+@login_required
+def tool_exec_output():
+    command = session.get('exec_cmd', None)
+    directory = session.get('exec_dir', None)
+    timeout = session.get('exec_timeout', None)
+    if command and directory and timeout:
+        try:
+            result = subprocess.run(command, timeout=timeout, cwd=directory, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+        except subprocess.TimeoutExpired:
+            return Response(f'COMMAND: {command}\nDIRECTORY: {directory}\nOUTPUT:\nВремя ожидания истекло',
+                            mimetype='text/text')
+        else:
+            session.pop('exec_cmd')
+            session.pop('exec_dir')
+            session.pop('exec_timeout')
+            text = f"COMMAND: {command}\nDIRECTORY: {directory}\n"
+            try:
+                if result.stdout:
+                    text += f"OUTPUT:\n{result.stdout.decode('utf8')}"
+                if result.stderr:
+                    text += f"ERRORS:\n{result.stderr.decode('utf8')}"
+            except UnicodeDecodeError:
+                if result.stdout:
+                    text += f"OUTPUT:\n{result.stdout}"
+                if result.stderr:
+                    text += f"ERRORS:\n{result.stderr}"
+            finally:
+                return Response(text, mimetype='text/text')
+    else:
+        return redirect('/tool/exec')
 
 
 @app.route('/user')
@@ -133,6 +193,11 @@ def user_edit(login):
     if not user:
         flash(f"Пользователя '{login}' не существует", 'danger')
         return redirect('/dashboard/users')
+    else:
+        if user.login == current_user.login:
+            pass_allowed = True
+        else:
+            pass_allowed = False
     if form_pass.validate_on_submit():
         user.password = lib.encrypt_password(form_pass.password.data)
         db.session.add(
@@ -143,15 +208,19 @@ def user_edit(login):
         flash(f"Пароль пользователя '{user.login}' успешно изменён", 'success')
         return redirect('/dashboard/users')
     elif form_name.validate_on_submit():
+        if user.login != current_user.login:
+            flash(f'Вы не можете изменить пароль другому пользователю', 'danger')
+            return redirect('/dashboard/users')
         db.session.add(
             Action(name='user_edit_name', login=current_user.login, address=request.remote_addr, timestamp=time(),
                    comment=f"Именение имени пользователя '{user.login}' с '{user.name}' на '{form_name.name.data}'"))
         user.name = form_name.name.data
         db.session.add(user)
         db.session.commit()
-        flash(f"Имя пользователя '{user.login}' успешно изменено", 'success')
+        flash(f"Пароль успешно изменено", 'success')
         return redirect('/dashboard/users')
-    return render_template('user/edit.html', user=user, form_name=form_name, form_pass=form_pass)
+
+    return render_template('user/edit.html', user=user, form_name=form_name, form_pass=form_pass, pass_allowed=pass_allowed)
 
 
 @app.route('/user/delete/<login>', methods=['GET', 'POST'])
@@ -179,6 +248,8 @@ def user_delete(login):
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
+    if User.query.first():
+        return redirect('/')
     form = SetupForm(request.form)
     if form.validate_on_submit():
         db.session.add(

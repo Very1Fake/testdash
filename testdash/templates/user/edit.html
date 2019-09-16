@@ -38,39 +38,41 @@
                             <label for="timestamp">Дата создания</label>
                             <input class="form-control" id="timestamp" value="{{ user.timestamp|time_to_date }}" type="text" readonly>
                         </div>
-                        {{ form_name.submit(class="btn btn-primary", value="Изменить") }}
+                        {{ form_name.submit_name(class="btn btn-primary", value="Изменить") }}
                     </form>
-                        <hr>
-                    <form method="post" action="">
-                        {{ form_pass.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form_pass.password.label(text="Пароль") }}
-                            {% if form_pass.password.errors %}
-                                {{ form_pass.password(class="form-control is-invalid", placeholder="Пароль") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.password.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form_pass.password(class="form-control", placeholder="Пароль") }}
-                            {% endif %}
-                        </div>
-                        <div class="form-group">
-                            {{ form_pass.repeat_password.label(text="Подтвердите пароль") }}
-                            {% if form_pass.repeat_password.errors %}
-                                {{ form_pass.repeat_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.repeat_password.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form_pass.repeat_password(class="form-control", placeholder="Повторите пароль") }}
-                            {% endif %}
-                        </div>
-                        {{ form_pass.submit(class="btn btn-primary", value="Изменить пароль") }}
-                    </form>
+                    {% if pass_allowed %}
+                            <hr>
+                        <form method="post" action="">
+                            {{ form_pass.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form_pass.password.label(text="Пароль") }}
+                                {% if form_pass.password.errors %}
+                                    {{ form_pass.password(class="form-control is-invalid", placeholder="Пароль") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form_pass.password(class="form-control", placeholder="Пароль") }}
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form_pass.repeat_password.label(text="Подтвердите пароль") }}
+                                {% if form_pass.repeat_password.errors %}
+                                    {{ form_pass.repeat_password(class="form-control is-invalid", placeholder="Повторите пароль") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.repeat_password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form_pass.repeat_password(class="form-control", placeholder="Повторите пароль") }}
+                                {% endif %}
+                            </div>
+                            {{ form_pass.submit_pass(class="btn btn-primary", value="Изменить пароль") }}
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
