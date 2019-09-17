@@ -31,16 +31,16 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            {{ form.name.label(text="Полное имя") }}
+                            {{ form.name.label(text="Имя") }}
                             {% if form.name.errors %}
-                                {{ form.name(class="form-control is-invalid", placeholder="Полное имя (необязательно)") }}
+                                {{ form.name(class="form-control is-invalid", placeholder="Имя (необязательно)") }}
                                 <div class="invalid-feedback">
                                     {% for error in form.name.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.name(class="form-control", placeholder="Полное имя (необязательно)") }}
+                                {{ form.name(class="form-control", placeholder="Имя (необязательно)") }}
                             {% endif %}
                         </div>
                         <div class="form-group">

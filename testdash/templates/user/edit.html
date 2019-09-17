@@ -22,16 +22,16 @@
                     <form method="post" action="">
                         {{ form_name.hidden_tag() }}
                         <div class="form-group">
-                            {{ form_name.name.label(text="Полное имя") }}
+                            {{ form_name.name.label(text="Имя") }}
                             {% if form_name.name.errors %}
-                                {{ form_name.name(class="form-control is-invalid", placeholder="Полное имя", value=user.name) }}
+                                {{ form_name.name(class="form-control is-invalid", placeholder="Имя", value=user.name) }}
                                 <div class="invalid-feedback">
                                     {% for error in form_name.name.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form_name.name(class="form-control", placeholder="Полное имя", value=user.name) }}
+                                {{ form_name.name(class="form-control", placeholder="Имя", value=user.name) }}
                             {% endif %}
                         </div>
                         <div class="form-group">

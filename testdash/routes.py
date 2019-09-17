@@ -8,7 +8,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from . import app, db, system
 from . import library as lib
 from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm, DeleteUserForm, \
-    ExecuteCommand
+    ExecuteCommandForm, ResetForm
 from .models import User, Visit, Action
 
 
@@ -43,7 +43,7 @@ def dashboard_section():  # Dashboard users page
 
 @app.route('/dashboard/actions')
 @login_required
-def dashboard_action():  # Dashboard actions page
+def dashboard_actions():  # Dashboard actions page
     if 'page' in request.args:
         page = int(request.args['page'])
         if page <= 0:
@@ -51,15 +51,15 @@ def dashboard_action():  # Dashboard actions page
             return redirect('/dashboard')
     else:
         page = 1
-    actions = Action.query.order_by(Action.timestamp.desc()).offset(20 * (page - 1)).limit(20).all()
-    if len(actions) == 0:
+    action_list = Action.query.order_by(Action.timestamp.desc()).offset(20 * (page - 1)).limit(20).all()
+    if len(action_list) == 0:
         flash('Такой страницы не существует', 'danger')
         return redirect('/dashboard/actions?page=1')
     elif len(Action.query.order_by(Action.timestamp.desc()).offset(20 * page).limit(20).all()) == 0:
         page_next = False
     else:
         page_next = True
-    return render_template('dashboard/actions.html', actions=actions, next=page_next, page=page)
+    return render_template('dashboard/actions.html', actions=action_list, next=page_next, page=page)
 
 
 @app.route('/dashboard/visits')
@@ -86,7 +86,8 @@ def dashboard_visits():  # Dashboard visits page
 @app.route('/dashboard/tools')
 @login_required
 def dashboard_tools():
-    return render_template('dashboard/tools.html')
+    form_reset = ResetForm()
+    return render_template('dashboard/tools.html', form_reset=form_reset)
 
 
 @app.route('/action')
@@ -114,7 +115,7 @@ def tools():
 @app.route('/tool/exec', methods=['GET', 'POST'])
 @login_required
 def tool_exec():
-    form = ExecuteCommand(request.form)
+    form = ExecuteCommandForm(request.form)
     if form.validate_on_submit():
         session['exec_cmd'] = form.command.data
         session['exec_dir'] = form.directory.data if form.directory.data else '/'
@@ -130,6 +131,9 @@ def tool_exec_output():
     directory = session.get('exec_dir', None)
     timeout = session.get('exec_timeout', None)
     if command and directory and timeout:
+        db.session.add(Action(name='exec', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                              comment=f"Команда: {command}\nДиректория: {directory}\nТаймаут: {timeout}"))
+        db.session.commit()
         try:
             result = subprocess.run(command, timeout=timeout, cwd=directory, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
@@ -155,6 +159,28 @@ def tool_exec_output():
                 return Response(text, mimetype='text/text')
     else:
         return redirect('/tool/exec')
+
+
+@app.route('/tool/reset', methods=['GET', 'POST'])
+@login_required
+def tool_reset():
+    form = ResetForm(request.form)
+    if form.validate_on_submit():
+        if lib.encrypt_password(form.confirmation.data) == User.query.filter_by(id=current_user.id).first().password:
+            db.drop_all()
+            db.create_all()
+            db.session.add(Action(name='reset', login='<SYSTEM>', address='', timestamp=time(),
+                                  comment=f'Сброс данный панели управления пользователем "{current_user.login}".' +
+                                          f' С "{request.remote_addr}"'))
+            db.session.commit()
+        else:
+            flash('Введён неверный пароль', 'danger')
+            db.session.add(
+                Action(name='reset_attempt', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                       comment=''))
+            db.session.commit()
+            return redirect('/dashboard/tools')
+    return redirect('/')
 
 
 @app.route('/user')
@@ -220,7 +246,8 @@ def user_edit(login):
         flash(f"Пароль успешно изменено", 'success')
         return redirect('/dashboard/users')
 
-    return render_template('user/edit.html', user=user, form_name=form_name, form_pass=form_pass, pass_allowed=pass_allowed)
+    return render_template('user/edit.html', user=user, form_name=form_name, form_pass=form_pass,
+                           pass_allowed=pass_allowed)
 
 
 @app.route('/user/delete/<login>', methods=['GET', 'POST'])
@@ -258,11 +285,13 @@ def setup():
                     timestamp=time())
         db.session.add(Action(name='user_create', login='<SYSTEM>', address='', timestamp=time(),
                               comment=f"Создание пользователя '{user.login}'"))
+        db.session.add(Visit(login=user.login, address=request.remote_addr, timestamp=time()))
         db.session.add(user)
         db.session.commit()
         flash(f'Установка успешна завершена', 'info')
         flash(f"Пользователь '{form.login.data}' создан", 'success')
-        return redirect('/signin')
+        login_user(user, remember=False)
+        return redirect('/')
     return render_template('setup.html', form=form)
 
 
@@ -290,5 +319,5 @@ def signout():  # Sign out page
 
 
 @app.errorhandler(404)
-def error404(e):
+def error404():
     return render_template('404.html')

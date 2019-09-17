@@ -9,6 +9,15 @@
 
 {% block main_block %}
     <div class="row m-0 col-bottom-p">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, message in messages %}
+                <div class="col-12">
+                    <div class="alert alert-{{ category }} m-0">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endwith %}
         <div class="col-6">
             <div class="card">
                 <div class="card-header">Система</div>
@@ -17,5 +26,57 @@
                 </div>
             </div>
         </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">TestDash</div>
+                <div class="list-group list-group-flush">
+                    <a class="list-group-item list-group-item-action list-group-item-danger" style="user-select:none" id="reset" data-target="resetConfirmModal" data-toggle="modal">Сброс</a>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <div class="modal fade" id="resetConfirmModal" tabindex="-1" role="dialog" aria-label="resetConfirmModalArea" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Сброс</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="/tool/reset">
+                    {{ form_reset.hidden_tag() }}
+                    <div class="modal-body">
+                        <p>Вы уверены что хотите сделать сброс, это приведёт к потерии всех данных.</p>
+                        <div class="form-group">
+                            {{ form_reset.confirmation.label(text="Для потдверждения введите свой пароль") }}
+                            {% if form_reset.confirmation.errors %}
+                                {{ form_reset.confirmation(class="form-control is-invalid", placeholder="Пароль") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form_reset.confirmation.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form_reset.confirmation(class="form-control", placeholder="Пароль") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        {{ form_reset.submit(class="btn btn-danger", value="Сброс") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#reset').on('click', function () {
+          $('#resetConfirmModal').modal('show');
+        })
+    </script>
 {% endblock %}

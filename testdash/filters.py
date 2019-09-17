@@ -14,7 +14,11 @@ def timestamp_to_date(timestamp: int) -> str:
 
 @app.template_filter('get_user_name')
 def get_user_name(login: str) -> str:
-    return User.query.filter_by(login=login).first().name
+    name = User.query.filter_by(login=login).first().name
+    if name == '':
+        return login
+    else:
+        return name
 
 
 @app.template_filter('user_mention')

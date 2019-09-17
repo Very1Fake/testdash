@@ -1,7 +1,8 @@
 {% macro menu(user, page) %}
     <div class="card">
-        <div class="card-header">
+        <div class="card-header" onclick="window.location.href='/user/edit/{{ user }}'" style="cursor:pointer">
             {{ user|get_user_name }}
+            <a href="/signout" class="badge badge-dark float-right mt-auto mb-auto" style="font-size:14px">Выход</a>
         </div>
         <div class="list-group list-group-flush">
             <a {% if page != 'main' %}href="/dashboard"{% endif %} class="list-group-item list-group-item-action {% if page == 'main' %}text-white active{% endif %}">Главная</a>
