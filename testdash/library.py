@@ -1,4 +1,5 @@
 import os
+import platform
 import time
 
 import cpuinfo
@@ -10,6 +11,7 @@ class System:
     def __init__(self):
         # Cache
         self.processor = cpuinfo.get_cpu_info()['brand']  # Processor name (name, model, brand, clock frequency)
+        self.platform = platform.system()
         self.boot_time = int(psutil.boot_time())  # Timestamp of boot
 
     @staticmethod
@@ -25,18 +27,28 @@ class System:
     def get_swap_info() -> list:  # Returns swap used and total value
         return [bytes_convert(psutil.swap_memory().used), bytes_convert(psutil.swap_memory().total)]
 
+    def shutdown(self):
+        if self.platform == 'Linux':
+            os.system('shutdown now')
+        elif self.platform == 'Windows':
+            os.system('shutdown /s')
+        else:
+            os.system('shutdown')
+
     def get(self) -> dict:  # Returns all system information
         return {
             'processor': self.processor,
             'disk': self.get_disk_info(),
             'ram': self.get_ram_info(),
             'swap': self.get_swap_info(),
-            'uptime': elapsed_time(int(time.time()), self.boot_time)
+            'loadavg': [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()],
+            'uptime': elapsed_time(self.boot_time, int(time.time())),
+            'p_count': len(psutil.pids())
         }
 
 
 def elapsed_time(begin: int, end: int):  # Convert time to '<hours>h <minutes>m <seconds>s' style
-    elapsed = begin - end
+    elapsed = end - begin
     if elapsed // 60 > 0:
         if (elapsed // 60) // 60 > 0:
             return f'{(elapsed // 60) // 60}h {(elapsed // 60) % 60}m {(elapsed % 60) % 60}s'
@@ -47,7 +59,7 @@ def elapsed_time(begin: int, end: int):  # Convert time to '<hours>h <minutes>m 
 
 
 def bytes_convert(b: int) -> str:  # Convert bytes to Pb/Tb/Gb/Mb/Kb style
-    r = ['B', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb']
+    r = ['B', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb']
     mr = 0
     while True:
         if b / 1024 > 1:

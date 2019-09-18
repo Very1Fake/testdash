@@ -36,12 +36,13 @@
                         </div>
                         <div class="form-group">
                             <label for="timestamp">Дата создания</label>
-                            <input class="form-control" id="timestamp" value="{{ user.timestamp|time_to_date }}" type="text" readonly>
+                            <input class="form-control" id="timestamp" value="{{ user.timestamp|time_to_date }}"
+                                   type="text" readonly>
                         </div>
                         {{ form_name.submit_name(class="btn btn-primary", value="Изменить") }}
                     </form>
                     {% if pass_allowed %}
-                            <hr>
+                        <hr>
                         <form method="post" action="">
                             {{ form_pass.hidden_tag() }}
                             <div class="form-group">

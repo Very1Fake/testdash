@@ -2,13 +2,14 @@ import os
 import subprocess
 from time import time
 
+import psutil
 from flask import render_template, redirect, request, flash, url_for, session, Response
 from flask_login import login_user, current_user, logout_user, login_required
 
 from . import app, db, system
 from . import library as lib
 from .forms import SignInForm, SetupForm, NewUserForm, EditUserNameForm, EditUserPassForm, DeleteUserForm, \
-    ExecuteCommandForm, ResetForm
+    ExecuteCommandForm, ConfirmForm
 from .models import User, Visit, Action
 
 
@@ -86,8 +87,8 @@ def dashboard_visits():  # Dashboard visits page
 @app.route('/dashboard/tools')
 @login_required
 def dashboard_tools():
-    form_reset = ResetForm()
-    return render_template('dashboard/tools.html', form_reset=form_reset)
+    form = ConfirmForm()
+    return render_template('dashboard/tools.html', form=form)
 
 
 @app.route('/action')
@@ -97,6 +98,7 @@ def actions():
 
 
 @app.route('/action/see/<int:action_id>')
+@login_required
 def action_see(action_id):
     action = Action.query.filter_by(id=action_id).first()
     if action:
@@ -110,6 +112,12 @@ def action_see(action_id):
 @login_required
 def tools():
     return redirect('/dashboard')
+
+
+@app.route('/tool/cpu_usage')
+@login_required
+def tool_processor_usage():
+    return render_template('tool/cpu_usage.html', cpu_usage=psutil.cpu_times_percent()._asdict())
 
 
 @app.route('/tool/exec', methods=['GET', 'POST'])
@@ -161,10 +169,48 @@ def tool_exec_output():
         return redirect('/tool/exec')
 
 
+@app.route('/tool/process/<int:pid>')
+@login_required
+def tool_process(pid: int):
+    try:
+        process = psutil.Process(pid)
+    except psutil.NoSuchProcess:
+        flash(f'Процесса #{pid} не существует', 'danger')
+        return redirect('/dashboard/tools')
+    else:
+        return render_template('tool/process.html', process=process)
+
+
+@app.route('/tool/process_kill/<int:pid>')
+@login_required
+def tool_process_kill(pid: int):
+    try:
+        process = psutil.Process(pid)
+        comment = f'PID: {process.pid}\nИмя: {process.name()}\nПользователь: ' \
+                  f'{process.username()}\nКоманда: {" ".join(process.cmdline())}'
+        process.kill()
+    except psutil.NoSuchProcess:
+        flash(f'Процесса #{pid} не существует', 'danger')
+        return redirect('/dashboard/tools')
+    else:
+        db.session.add(
+            Action(name='process_kill', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                   comment=comment))
+        db.session.commit()
+        flash(f'Процесс #{pid} завершён', 'info')
+        return redirect('/dashboard/tools')
+
+
+@app.route('/tool/process_list')
+@login_required
+def tool_process_list():
+    return render_template('tool/process_list.html', p_list=psutil.process_iter())
+
+
 @app.route('/tool/reset', methods=['GET', 'POST'])
 @login_required
 def tool_reset():
-    form = ResetForm(request.form)
+    form = ConfirmForm(request.form)
     if form.validate_on_submit():
         if lib.encrypt_password(form.confirmation.data) == User.query.filter_by(id=current_user.id).first().password:
             db.drop_all()
@@ -273,6 +319,24 @@ def user_delete(login):
     return render_template('user/delete.html', form=form, user=user.login)
 
 
+@app.route('/server/shutdown', methods=['GET', 'POST'])
+@login_required
+def server_shutdown():
+    form = ConfirmForm(request.form)
+    if form.validate_on_submit():
+        db.session.add(Action(name='shutdown', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                              comment=''))
+        db.session.commit()
+        system.shutdown()
+    else:
+        flash('Введён неверный пароль', 'danger')
+        db.session.add(
+            Action(name='shutdown_attempt', login=current_user.login, address=request.remote_addr, timestamp=time(),
+                   comment=''))
+        db.session.commit()
+        return redirect('/dashboard/tools')
+
+
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
     if User.query.first():
@@ -319,5 +383,5 @@ def signout():  # Sign out page
 
 
 @app.errorhandler(404)
-def error404():
+def error404(error):
     return render_template('404.html')

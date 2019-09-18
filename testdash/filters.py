@@ -1,8 +1,8 @@
 from datetime import datetime
+from time import time
 
-from .models import User
 from . import app
-
+from .models import User
 
 ''' Filters for jinja '''
 
@@ -27,3 +27,41 @@ def user_mention(login: str) -> str:
         return f'<a href="/user/edit/{login}" class="badge badge-pill badge-info">{login}</a>'
     else:
         return '&#60;SYSTEM&#62;'
+
+
+@app.template_filter('percent_list')
+def percent_list(array: list) -> list:
+    for i in range(len(array)):
+        array[i] = f"{array[i]}%"
+    return array
+
+
+@app.template_filter('list_to_str')
+def list_to_str(array: list) -> str:
+    return ' '.join(array)
+
+
+@app.template_filter('elapsed_time')
+def elapsed_time(begin: int):  # Convert time to '<hours>h <minutes>m <seconds>s' style
+    elapsed = int(time()) - int(begin)
+    if elapsed // 60 > 0:
+        if (elapsed // 60) // 60 > 0:
+            return f'{(elapsed // 60) // 60}h {(elapsed // 60) % 60}m {(elapsed % 60) % 60}s'
+        else:
+            return f'{elapsed // 60}m {elapsed % 60}s'
+    else:
+        return f'{elapsed}s'
+
+
+@app.template_filter('bytes_convert')
+def bytes_convert(b: int) -> str:  # Convert bytes to Pb/Tb/Gb/Mb/Kb style
+    r = ['B', 'Kb', 'Mb', 'Gb', 'Tb']
+    mr = 0
+    while True:
+        if b / 1024 > 1:
+            b = b / 1024
+            mr += 1
+        else:
+            b = round(b, 2)
+            break
+    return f'{b}{r[mr]}'

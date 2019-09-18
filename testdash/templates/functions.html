@@ -2,15 +2,21 @@
     <div class="card">
         <div class="card-header" onclick="window.location.href='/user/edit/{{ user }}'" style="cursor:pointer">
             {{ user|get_user_name }}
-            <a href="/signout" class="badge badge-dark float-right mt-auto mb-auto" style="font-size:14px">Выход</a>
+            <a href="/signout" class="badge badge-dark float-right" style="font-size:15px">Выход</a>
         </div>
         <div class="list-group list-group-flush">
-            <a {% if page != 'main' %}href="/dashboard"{% endif %} class="list-group-item list-group-item-action {% if page == 'main' %}text-white active{% endif %}">Главная</a>
-            <a {% if page != 'users' %}href="/dashboard/users"{% endif %} class="list-group-item list-group-item-action {% if page == 'users' %}text-white active{% endif %}">Пользователи</a>
-            <a {% if page != 'actions' %}href="/dashboard/actions"{% endif %} class="list-group-item list-group-item-action {% if page == 'actions' %}text-white active{% endif %}">Журнал действий</a>
-            <a {% if page != 'visits' %}href="/dashboard/visits"{% endif %} class="list-group-item list-group-item-action {% if page == 'visits' %}text-white active{% endif %}">Журнал посещений</a>
-            <a {% if page != 'tools' %}href="/dashboard/tools"{% endif %} class="list-group-item list-group-item-action {% if page == 'tools' %}text-white active{% endif %}">Инструменты</a>
-            <a href="/signout" class="list-group-item list-group-item-action">Выйти</a>
+            <a {% if page != 'main' %}href="/dashboard"{% endif %}
+               class="list-group-item list-group-item-action {% if page == 'main' %}text-white active{% endif %}">Главная</a>
+            <a {% if page != 'users' %}href="/dashboard/users"{% endif %}
+               class="list-group-item list-group-item-action {% if page == 'users' %}text-white active{% endif %}">Пользователи</a>
+            <a {% if page != 'actions' %}href="/dashboard/actions"{% endif %}
+               class="list-group-item list-group-item-action {% if page == 'actions' %}text-white active{% endif %}">Журнал
+                действий</a>
+            <a {% if page != 'visits' %}href="/dashboard/visits"{% endif %}
+               class="list-group-item list-group-item-action {% if page == 'visits' %}text-white active{% endif %}">Журнал
+                посещений</a>
+            <a {% if page != 'tools' %}href="/dashboard/tools"{% endif %}
+               class="list-group-item list-group-item-action {% if page == 'tools' %}text-white active{% endif %}">Инструменты</a>
         </div>
     </div>
 {% endmacro %}

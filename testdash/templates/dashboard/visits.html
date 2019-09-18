@@ -24,20 +24,20 @@
                 <div class="card-body">
                     <table class="table table-striped table-borderless mb-0">
                         <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Дата</th>
-                                <th scope="col">Пользователь</th>
-                                <th scope="col">IP</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Пользователь</th>
+                            <th scope="col">IP</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for visit in visits %}
-                                <tr>
-                                    <th>{{ visit.timestamp|time_to_date }}</th>
-                                    <td>{{ visit.login }}</td>
-                                    <td>{{ visit.address }}</td>
-                                </tr>
-                            {% endfor %}
+                        {% for visit in visits %}
+                            <tr>
+                                <th>{{ visit.timestamp|time_to_date }}</th>
+                                <td>{{ visit.login }}</td>
+                                <td>{{ visit.address }}</td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                     <ul class="pagination justify-content-center mt-3 mb-0">

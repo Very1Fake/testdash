@@ -1,8 +1,7 @@
-from Crypto.Hash import SHA512
 from flask_login import UserMixin
 
-from . import login_manager
 from . import db
+from . import login_manager
 
 
 @login_manager.user_loader

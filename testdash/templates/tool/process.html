@@ -1,0 +1,68 @@
+{% extends "dashboard.html" %}
+{% from "functions.html" import menu %}
+
+{% block title %}Процесс #{{ process.pid }}{% endblock %}
+
+{% block menu %}
+    {{ menu(current_user.login, 'tools_process') }}
+{% endblock %}
+
+{% block main_block %}
+    <div class="row m-0 col-bottom-p">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    Процесс #{{ process.pid }}
+                    <a href="/tool/process_kill/{{ process.pid }}" class="badge badge-danger float-right"
+                       style="font-size:15px">Завершить</a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <td>PID</td>
+                            <td>{{ process.pid }}</td>
+                        </tr>
+                        <tr>
+                            <td>Название</td>
+                            <td>{{ process.name() }}</td>
+                        </tr>
+                        <tr>
+                            <td>Пользователь</td>
+                            <td>{{ process.username() }}</td>
+                        </tr>
+                        <tr>
+                            <td>Статус</td>
+                            <td>{{ process.status() }}</td>
+                        </tr>
+                        <tr>
+                            <td>Процессор (за 1 секунду)</td>
+                            <td>{{ process.cpu_percent(interval=1) }}%</td>
+                        </tr>
+                        <tr>
+                            <td>Память</td>
+                            <td>{{ process.memory_info().rss|bytes_convert }}</td>
+                        </tr>
+                        <tr>
+                            <td>Время работы</td>
+                            <td>{{ process.create_time()|elapsed_time }}</td>
+                        </tr>
+                        <tr>
+                            <td>Команда</td>
+                            <td>{{ process.cmdline()|list_to_str }}</td>
+                        </tr>
+                        <tr>
+                            <td>Рабочая директория</td>
+                            <td>{{ process.cwd() }}</td>
+                        </tr>
+                        <tr>
+                            <td>Расположение файла</td>
+                            <td>{{ process.exe() }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

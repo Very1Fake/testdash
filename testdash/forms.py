@@ -49,6 +49,6 @@ class ExecuteCommandForm(FlaskForm):
     submit = SubmitField('execute')
 
 
-class ResetForm(FlaskForm):
+class ConfirmForm(FlaskForm):
     confirmation = PasswordField('login', validators=[DataRequired(), Length(4, 32)])
     submit = SubmitField('reset')

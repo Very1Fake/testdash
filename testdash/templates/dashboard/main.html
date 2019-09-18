@@ -27,7 +27,7 @@
                     <table class="table table-borderless mb-0">
                         <tr>
                             <td>Процессор</td>
-                            <td>{{ sys_info['processor'] }}</td>
+                            <td><a href="/tool/cpu_usage">{{ sys_info['processor'] }}</a></td>
                         </tr>
                         <tr>
                             <td>Размер дискового пространства</td>
@@ -38,14 +38,22 @@
                             <td>{{ sys_info['ram'][0] }} / {{ sys_info['ram'][1] }}</td>
                         </tr>
                         {% if sys_info['swap'][1] != '0B' %}
-                        <tr>
-                            <td>Файл подкачки (swap)</td>
-                            <td>{{ sys_info['swap'][0] }} / {{ sys_info['swap'][1] }}</td>
-                        </tr>
+                            <tr>
+                                <td>Файл подкачки (swap)</td>
+                                <td>{{ sys_info['swap'][0] }} / {{ sys_info['swap'][1] }}</td>
+                            </tr>
                         {% endif %}
+                        <tr>
+                            <td>Средняя нагрузка (1, 5, 15 мин)</td>
+                            <td>{{ sys_info['loadavg']|percent_list|list_to_str }}</td>
+                        </tr>
                         <tr>
                             <td>Продолжительность работы</td>
                             <td>{{ sys_info['uptime'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Количество процессов</td>
+                            <td><a href="/tool/process_list">{{ sys_info['p_count'] }}</a></td>
                         </tr>
                     </table>
                 </div>
@@ -59,20 +67,20 @@
                 <div class="card-body text-center">
                     <table class="table table-borderless mb-0">
                         <thead>
-                            <tr>
-                                <th scope="col">Дата</th>
-                                <th scope="col">Пользователь</th>
-                                <th scope="col">IP</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Пользователь</th>
+                            <th scope="col">IP</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for visit in visits %}
-                                <tr>
-                                    <th>{{ visit.timestamp|time_to_date }}</th>
-                                    <td>{{ visit.login }}</td>
-                                    <td>{{ visit.address }}</td>
-                                </tr>
-                            {% endfor %}
+                        {% for visit in visits %}
+                            <tr>
+                                <th>{{ visit.timestamp|time_to_date }}</th>
+                                <td>{{ visit.login }}</td>
+                                <td>{{ visit.address }}</td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                     <a href="/dashboard/visits" class="btn btn-primary m-3">Больше</a>

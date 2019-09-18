@@ -11,30 +11,32 @@
     <div class="row m-0 col-bottom-p">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">Действие '{{ action.name }}' от {% if action.login == '<SYSTEM>' %}{{ action.login|user_mention|safe }}{% else %}{{ action.login }}{% endif %}</div>
+                <div class="card-header">Действие '{{ action.name }}' от
+                    {% if action.login == '<SYSTEM>' %}{{ action.login|user_mention|safe }}{% else %}
+                        {{ action.login }}{% endif %}</div>
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table table-striped">
                         <tbody>
-                            <tr>
-                                <td>Время</td>
-                                <td>{{ action.timestamp|time_to_date }}</td>
-                            </tr>
-                            <tr>
-                                <td>Пользователь</td>
-                                <td>{{ action.login }}</td>
-                            </tr>
-                            <tr>
-                                <td>IP</td>
-                                <td>{{ action.address }}</td>
-                            </tr>
-                            <tr>
-                                <td>Название</td>
-                                <td>{{ action.name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Комментарий</td>
-                                <td>{{ action.comment }}</td>
-                            </tr>
+                        <tr>
+                            <td>Время</td>
+                            <td>{{ action.timestamp|time_to_date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Пользователь</td>
+                            <td>{{ action.login }}</td>
+                        </tr>
+                        <tr>
+                            <td>IP</td>
+                            <td>{{ action.address }}</td>
+                        </tr>
+                        <tr>
+                            <td>Название</td>
+                            <td>{{ action.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Комментарий</td>
+                            <td><p>{{ action.comment.replace('\n', '<br>')|safe }}</p></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
