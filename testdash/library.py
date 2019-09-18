@@ -41,7 +41,7 @@ class System:
             'disk': self.get_disk_info(),
             'ram': self.get_ram_info(),
             'swap': self.get_swap_info(),
-            'loadavg': [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()],
+            'loadavg': [round(x / psutil.cpu_count() * 100, 2) for x in psutil.getloadavg()],
             'uptime': elapsed_time(self.boot_time, int(time.time())),
             'p_count': len(psutil.pids())
         }
