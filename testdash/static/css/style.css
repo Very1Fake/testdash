@@ -12,7 +12,7 @@ body {
 
 .window-border {
     height: auto;
-    min-height: 5rem;
+    min-height: 64px;
 }
 
 

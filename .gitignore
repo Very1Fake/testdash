@@ -1,6 +1,5 @@
 # Not needed
 testdash/app.db
-testdash/app (copy).db
 testdash/__pycache__/
 __pycache__/
 
