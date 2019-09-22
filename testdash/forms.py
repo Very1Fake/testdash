@@ -42,13 +42,13 @@ class DeleteUserForm(FlaskForm):  # Validation form for user delete
     submit = SubmitField('delete')
 
 
-class ExecuteCommandForm(FlaskForm):
+class ExecuteCommandForm(FlaskForm):  # Validation form for command execute
     command = StringField('command', validators=[DataRequired(), Length(1, 512)])
     directory = StringField('directory')
     timeout = IntegerField('timeout', validators=[DataRequired(), NumberRange(1, 8)])
     submit = SubmitField('execute')
 
 
-class ConfirmForm(FlaskForm):
+class ConfirmForm(FlaskForm):  # Validation form for confirmations
     confirmation = PasswordField('login', validators=[DataRequired(), Length(4, 32)])
     submit = SubmitField('reset')

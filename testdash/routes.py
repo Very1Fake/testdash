@@ -321,9 +321,10 @@ def user_delete(login):
 
 @app.route('/server/shutdown', methods=['GET', 'POST'])
 @login_required
-def server_shutdown():
+def server_shutdown():  # Shutdown server
     form = ConfirmForm(request.form)
-    if form.validate_on_submit():
+    if form.validate_on_submit() and \
+            lib.encrypt_password(form.confirmation.data) == User.query.filter_by(id=current_user.id).first().password:
         db.session.add(Action(name='shutdown', login=current_user.login, address=request.remote_addr, timestamp=time(),
                               comment=''))
         db.session.commit()
@@ -338,7 +339,7 @@ def server_shutdown():
 
 
 @app.route('/setup', methods=['GET', 'POST'])
-def setup():
+def setup():  # Setup page
     if User.query.first():
         return redirect('/')
     form = SetupForm(request.form)
@@ -383,5 +384,5 @@ def signout():  # Sign out page
 
 
 @app.errorhandler(404)
-def error404(error):
+def error404(error):  # Error 404 page
     return render_template('404.html')

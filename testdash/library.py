@@ -27,7 +27,7 @@ class System:
     def get_swap_info() -> list:  # Returns swap used and total value
         return [bytes_convert(psutil.swap_memory().used), bytes_convert(psutil.swap_memory().total)]
 
-    def shutdown(self):
+    def shutdown(self) -> None:  # Turn off server
         if self.platform == 'Linux':
             os.system('shutdown now')
         elif self.platform == 'Windows':
@@ -47,7 +47,7 @@ class System:
         }
 
 
-def elapsed_time(begin: int, end: int):  # Convert time to '<hours>h <minutes>m <seconds>s' style
+def elapsed_time(begin: int, end: int) -> str:  # Convert time to '<hours>h <minutes>m <seconds>s' style
     elapsed = end - begin
     if elapsed // 60 > 0:
         if (elapsed // 60) // 60 > 0:
@@ -75,7 +75,7 @@ def encrypt_password(password: str) -> str:  # Return SHA512 hash of password
     return SHA512.new(bytes(password, 'utf8')).digest().hex()
 
 
-def check_password(password: str, password_right: str):  # Check SHA512 hash of password with original
+def check_password(password: str, password_right: str) -> bool:  # Check SHA512 hash of password with original
     if SHA512.new(bytes(password, 'utf8')).digest().hex() == password_right:
         return True
     else:

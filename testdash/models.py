@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):  # User model
         return f"User ('{self.id}', '{self.login}')"
 
 
-class Action(db.Model):  # Users actions (soon)
+class Action(db.Model):  # Users actions
     id = db.Column(db.Integer, unique=True, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.String(32), nullable=False)
     login = db.Column(db.String(64), nullable=False)

@@ -8,12 +8,12 @@ from .models import User
 
 
 @app.template_filter('time_to_date')
-def timestamp_to_date(timestamp: int) -> str:
+def timestamp_to_date(timestamp: int) -> str:  # Convert timestamp to date in format YYYY/MM/DD hh:mm:ss
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 
 @app.template_filter('get_user_name')
-def get_user_name(login: str) -> str:
+def get_user_name(login: str) -> str:  # Return user name by login
     name = User.query.filter_by(login=login).first().name
     if name == '':
         return login
@@ -22,7 +22,7 @@ def get_user_name(login: str) -> str:
 
 
 @app.template_filter('user_mention')
-def user_mention(login: str) -> str:
+def user_mention(login: str) -> str:  # Return badge with link to user profile
     if login != '<SYSTEM>':
         return f'<a href="/user/edit/{login}" class="badge badge-pill badge-info">{login}</a>'
     else:
@@ -30,14 +30,14 @@ def user_mention(login: str) -> str:
 
 
 @app.template_filter('percent_list')
-def percent_list(array: list) -> list:
+def percent_list(array: list) -> list:  # Convert list to string in format "<i[0]>% <i[1]>% <i[2]>%"
     for i in range(len(array)):
         array[i] = f"{array[i]}%"
     return array
 
 
 @app.template_filter('list_to_str')
-def list_to_str(array: list) -> str:
+def list_to_str(array: list) -> str:  # Convert list to string in format "<i[0]> <i[1]> <i[2]>"
     return ' '.join(array)
 
 
