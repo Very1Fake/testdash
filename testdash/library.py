@@ -10,7 +10,7 @@ from Crypto.Hash import SHA512
 class System:
     def __init__(self):
         # Cache
-        self.processor = cpuinfo.get_cpu_info()['brand']  # Processor name (name, model, brand, clock frequency)
+        self.processor = cpuinfo.get_cpu_info()['brand_raw']  # Processor name (name, model, brand, clock frequency)
         self.platform = platform.system()
         self.boot_time = int(psutil.boot_time())  # Timestamp of boot
 
